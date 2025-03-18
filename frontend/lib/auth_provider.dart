@@ -256,15 +256,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   // Add a new pet (POST to pets endpoint)
-  Future<void> addPet(String name) async {
+  Future<void> addPet(String name, String species) async {
     if (_accessToken == null) return;
+    // final res = await http.post(
+    //   Uri.parse(PETS_URL),
+    //   headers: {
+    //     'Authorization': 'Bearer $_accessToken',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: jsonEncode({'name': name}),
+    // );
     final res = await http.post(
       Uri.parse(PETS_URL),
       headers: {
         'Authorization': 'Bearer $_accessToken',
         'Content-Type': 'application/json'
       },
-      body: jsonEncode({'name': name}),
+      body: jsonEncode({
+        'name': name,
+        'species': species,
+        'description': '',
+        'breed': '',
+        'family': null,
+      }),
     );
     if (res.statusCode == 200 || res.statusCode == 201) {
       final petData = json.decode(res.body);
@@ -279,7 +293,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Unauthorized: try refreshing token and retry once
       final refreshed = await _refreshAccessToken();
       if (refreshed) {
-        await addPet(name);
+        await addPet(name, species);
       }
     }
   }

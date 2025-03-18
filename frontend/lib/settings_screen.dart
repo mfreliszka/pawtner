@@ -71,7 +71,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: EdgeInsets.all(16.0),
         children: [
-          Text('General Settings', style: Theme.of(context).textTheme.headline6),
+          Text('General Settings', style: Theme.of(context).textTheme.titleMedium),
           SwitchListTile(
             title: Text('Enable Notifications'),
             value: _notificationsEnabled,

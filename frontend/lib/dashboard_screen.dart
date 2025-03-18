@@ -69,17 +69,60 @@ class UserDashboardScreen extends ConsumerWidget {
                     icon: Icon(Icons.add),
                     onPressed: () {
                       // Show dialog to add a new pet
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (context) {
+                      //     String newPetName = '';
+                      //     return AlertDialog(
+                      //       title: Text('Add Pet'),
+                      //       content: TextField(
+                      //         decoration: InputDecoration(labelText: 'Pet Name'),
+                      //         onChanged: (val) {
+                      //           newPetName = val;
+                      //         },
+                      //       ),
+                      //       actions: [
+                      //         TextButton(
+                      //           onPressed: () => Navigator.of(context).pop(),
+                      //           child: Text('Cancel'),
+                      //         ),
+                      //         TextButton(
+                      //           onPressed: () {
+                      //             if (newPetName.trim().isNotEmpty) {
+                      //               ref.read(authProvider.notifier).addPet(newPetName.trim());
+                      //             }
+                      //             Navigator.of(context).pop();
+                      //           },
+                      //           child: Text('Add'),
+                      //         ),
+                      //       ],
+                      //     );
+                      //   },
+                      // );
                       showDialog(
                         context: context,
                         builder: (context) {
                           String newPetName = '';
+                          String selectedSpecies = 'DOG'; // default
                           return AlertDialog(
                             title: Text('Add Pet'),
-                            content: TextField(
-                              decoration: InputDecoration(labelText: 'Pet Name'),
-                              onChanged: (val) {
-                                newPetName = val;
-                              },
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  decoration: InputDecoration(labelText: 'Pet Name'),
+                                  onChanged: (val) => newPetName = val,
+                                ),
+                                DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(labelText: 'Species'),
+                                  value: selectedSpecies,
+                                  items: [
+                                    DropdownMenuItem(value: 'DOG', child: Text('Dog')),
+                                    DropdownMenuItem(value: 'CAT', child: Text('Cat')),
+                                  ],
+                                  onChanged: (val) => selectedSpecies = val!,
+                                ),
+                              ],
                             ),
                             actions: [
                               TextButton(
@@ -89,7 +132,7 @@ class UserDashboardScreen extends ConsumerWidget {
                               TextButton(
                                 onPressed: () {
                                   if (newPetName.trim().isNotEmpty) {
-                                    ref.read(authProvider.notifier).addPet(newPetName.trim());
+                                    ref.read(authProvider.notifier).addPet(newPetName.trim(), selectedSpecies);
                                   }
                                   Navigator.of(context).pop();
                                 },
@@ -99,6 +142,7 @@ class UserDashboardScreen extends ConsumerWidget {
                           );
                         },
                       );
+
                     },
                   ),
                 ],
@@ -117,7 +161,7 @@ class UserDashboardScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Family', style: Theme.of(context).textTheme.headline6),
+                  Text('Family', style: Theme.of(context).textTheme.titleMedium),
                   IconButton(
                     icon: Icon(Icons.add),
                     onPressed: () {
