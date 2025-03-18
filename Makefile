@@ -7,3 +7,6 @@ lint:
 
 format:
 	ruff format .
+
+flutter-get:
+	flutter pub get
