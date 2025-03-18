@@ -1,5 +1,6 @@
 run:
-	uvicorn config.asgi:application --reload
+	python manage.py runserver 0.0.0.0:8000
+#	uvicorn config.asgi:application 0.0.0.0:8000 --reload
 
 lint:
 	ruff check .

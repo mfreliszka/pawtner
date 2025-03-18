@@ -29,8 +29,14 @@ class Profile(models.Model):
         return f"{self.owner}'s profile"
 
 
+# @receiver(post_save, sender=PawtnerUser)
+# async def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         profile = await Profile.objects.acreate(owner=instance)
+#         PawtnerUser.objects.filter(pk=instance.pk).aupdate(profile_uuid=profile.uuid)
+
 @receiver(post_save, sender=PawtnerUser)
-async def create_user_profile(sender, instance, created, **kwargs):
+def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        profile = Profile.objects.acreate(owner=instance)
-        PawtnerUser.objects.filter(pk=instance.pk).aupdate(profile_uuid=profile.uuid)
+        profile = Profile.objects.create(owner=instance)
+        PawtnerUser.objects.filter(pk=instance.pk).update(profile_uuid=profile.uuid)
