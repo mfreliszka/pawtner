@@ -45,8 +45,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
-    "pawtner.profile.apps.ProfileConfig",
-    "pawtner.pets.apps.ProfileConfig",
+    "pawtner.user.apps.UserConfig",
+    "pawtner.pets.apps.PetsConfig",
+    "pawtner.family.apps.FamilyConfig",
 ]
 
 REST_FRAMEWORK = {
@@ -160,4 +161,4 @@ SIMPLE_JWT = {
 }
 
 # USER
-AUTH_USER_MODEL = 'profile.PawtnerUser'
+AUTH_USER_MODEL = 'user.PawtnerUser'
