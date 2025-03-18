@@ -2,6 +2,7 @@ from rest_framework import mixins, viewsets, permissions, generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
@@ -46,7 +47,8 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        # You could generate a token for the new user here if you want to auto-login upon registration.
+        # generate a token for the new user for auto-login upon registration.
+        refresh = RefreshToken.for_user(user)
         data = {
             "uuid": user.uuid,
             "username": user.username,

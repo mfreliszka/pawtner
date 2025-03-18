@@ -9,6 +9,7 @@ User = get_user_model()
 class Family(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_families')
+    members = models.ManyToManyField(User, related_name="member_of_families")
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

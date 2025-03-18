@@ -10,8 +10,8 @@ from django.contrib.auth.models import AbstractUser
 class PawtnerUser(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     profile_uuid = models.UUIDField(null=True, blank=True, editable=False, verbose_name="user_profile_uuid")
-    families = models.ManyToManyField("family.Family")
-    pets = models.ManyToManyField("pets.Pet")
+    #families = models.ManyToManyField("family.Family")
+    #pets = models.ManyToManyField("pets.Pet")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
