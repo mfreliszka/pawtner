@@ -258,14 +258,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Add a new pet (POST to pets endpoint)
   Future<void> addPet(String name, String species) async {
     if (_accessToken == null) return;
-    // final res = await http.post(
-    //   Uri.parse(PETS_URL),
-    //   headers: {
-    //     'Authorization': 'Bearer $_accessToken',
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: jsonEncode({'name': name}),
-    // );
     final res = await http.post(
       Uri.parse(PETS_URL),
       headers: {
