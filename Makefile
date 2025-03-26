@@ -11,3 +11,6 @@ format:
 
 flutter-get:
 	flutter pub get
+
+run-emulator:
+	flutter emulators --launch Pixel_7_API_35
