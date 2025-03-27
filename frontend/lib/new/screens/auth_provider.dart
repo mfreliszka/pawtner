@@ -165,6 +165,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Registration successful, now log in with the new credentials
       await login(username, password);
+    } else if (response.statusCode == 400) {
+      throw Exception(response.body);
     } else {
       state = AuthState.initial().copyWith(error: 'Registration failed');
     }

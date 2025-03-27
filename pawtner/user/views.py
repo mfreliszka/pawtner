@@ -1,4 +1,4 @@
-from rest_framework import mixins, viewsets, permissions, generics, status
+from rest_framework import mixins, viewsets, permissions, generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -45,13 +45,18 @@ class RegisterView(generics.CreateAPIView):
         Overriding CreateAPIView to customize response after creating a user.
         """
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        # generate a token for the new user for auto-login upon registration.
-        refresh = RefreshToken.for_user(user)
-        data = {
-            "uuid": user.uuid,
-            "username": user.username,
-            "email": user.email
-        }
-        return Response(data, status=status.HTTP_201_CREATED)
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.save()
+            # generate a token for the new user for auto-login upon registration.
+            refresh = RefreshToken.for_user(user)
+            data = {
+                "uuid": user.uuid,
+                "username": user.username,
+                "email": user.email
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
+
+        except serializers.ValidationError as e:
+            # This will catch and return specific validation errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

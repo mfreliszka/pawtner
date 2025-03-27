@@ -256,12 +256,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           Navigator.pushReplacementNamed(context, '/dashboard');
         }
       } catch (e) {
+        // if (mounted) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(
+        //       content: Text('Error: ${e.toString()}'),
+        //       backgroundColor: Colors.red,
+        //     ),
+        //   );
+        // }
         if (mounted) {
+          String errorMessage = 'Registration failed. Please try again.';
+
+          // You might want to check the specific error type or message
+          // if (e.toString().contains('400') ||
+          //     e.toString().contains('Unauthorized')) {
+          //   errorMessage = 'Invalid username or password';
+          // }
+          if (e.toString().contains('username')) {
+            errorMessage = 'A user with this username already exists.';
+          } else if (e.toString().contains('email')) {
+            errorMessage = 'A user with this email address already exists.';
+          }
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
           );
         }
       } finally {
