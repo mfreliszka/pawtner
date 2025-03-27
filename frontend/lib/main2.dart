@@ -1,9 +1,13 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import 'new/screens/login_screen.dart';
-import 'new/screens/dashboard_screen.dart';
+import 'log_screen.dart';
+//import 'login_screen.dart';
+import 'register_screen.dart';
+import 'dashboard_screen.dart';
+import 'account_screen.dart';
+import 'settings_screen.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -15,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PetTracker',
+      title: 'Flutter Demo App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         inputDecorationTheme: InputDecorationTheme(
@@ -26,10 +30,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
-        // '/register': (context) => RegisterScreen(),
+        '/register': (context) => RegisterScreen(),
         '/dashboard': (context) => UserDashboardScreen(),
-        // '/account': (context) => UserAccountScreen(),
-        // '/settings': (context) => SettingsScreen(),
+        '/account': (context) => UserAccountScreen(),
+        '/settings': (context) => SettingsScreen(),
       },
     );
   }
