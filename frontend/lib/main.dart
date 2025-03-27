@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'new/screens/login_screen.dart';
 import 'new/screens/register_screen.dart';
 import 'new/screens/dashboard_screen.dart';
+import 'new/route_generator.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -25,13 +26,14 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginScreen(),
-        '/register': (context) => RegisterScreen(),
-        '/dashboard': (context) => UserDashboardScreen(),
-        // '/account': (context) => UserAccountScreen(),
-        // '/settings': (context) => SettingsScreen(),
-      },
+      onGenerateRoute: RouteGenerator.generateRoute,
+      // routes: {
+      //   '/login': (context) => LoginScreen(),
+      //   '/register': (context) => RegisterScreen(),
+      //   '/dashboard': (context) => DashboardScreen(),
+      //   '/account': (context) => UserAccountScreen(),
+      //   '/settings': (context) => SettingsScreen(),
+      // },
     );
   }
 }
