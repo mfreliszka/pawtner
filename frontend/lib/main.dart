@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'new/screens/login_screen.dart';
+import 'new/screens/register_screen.dart';
 import 'new/screens/dashboard_screen.dart';
 
 void main() async {
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
-        // '/register': (context) => RegisterScreen(),
+        '/register': (context) => RegisterScreen(),
         '/dashboard': (context) => UserDashboardScreen(),
         // '/account': (context) => UserAccountScreen(),
         // '/settings': (context) => SettingsScreen(),

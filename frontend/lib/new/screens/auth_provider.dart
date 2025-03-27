@@ -143,6 +143,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
           error: 'Failed to fetch user data',
         );
       }
+    } else if (response.statusCode == 401) {
+      throw Exception('401 Unauthorized');
     } else {
       state = AuthState.initial().copyWith(error: 'Login failed');
     }

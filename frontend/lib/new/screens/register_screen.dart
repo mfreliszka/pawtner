@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
@@ -32,6 +33,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void dispose() {
     _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -48,11 +50,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 40),
               _buildHeader(),
               const SizedBox(height: 40),
-              _buildLoginForm(),
+              _buildRegisterForm(),
               const SizedBox(height: 20),
-              _buildLoginButton(),
+              _buildRegisterButton(),
               const SizedBox(height: 16),
-              _buildSignUpLink(),
+              _buildSignInLink(),
             ],
           ),
         ),
@@ -64,24 +66,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Column(
       children: const [
         Text(
-          'Welcome Back!',
+          'Register new account',
           style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
         Text(
-          'Sign in to continue',
+          'Register new account to continue',
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ],
     );
   }
 
-  Widget _buildLoginForm() {
+  Widget _buildRegisterForm() {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          // Email Field
+          // username Field
           TextFormField(
             controller: _usernameController,
             keyboardType: TextInputType.name,
@@ -107,6 +109,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               }
               if (!RegExp(r'^[a-zA-Z0-9_]{3,16}$').hasMatch(value)) {
                 return 'Please enter a valid username';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          // email Field
+          TextFormField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              hintText: 'Enter your email',
+              prefixIcon: const Icon(Icons.email_outlined),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.grey, width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.blue, width: 2),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              }
+              if (!RegExp(
+                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+              ).hasMatch(value)) {
+                return 'Please enter a valid email';
               }
               return null;
             },
@@ -153,24 +188,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             },
           ),
           const SizedBox(height: 12),
-          // Forgot Password Link
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {
-                // Handle forgot password
-              },
-              child: const Text('Forgot Password?'),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildRegisterButton() {
     return ElevatedButton(
-      onPressed: _isLoading ? null : _handleLogin,
+      onPressed: _isLoading ? null : _handleRegister,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -185,26 +210,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-              : const Text('Login', style: TextStyle(fontSize: 16)),
+              : const Text('Register', style: TextStyle(fontSize: 16)),
     );
   }
 
-  Widget _buildSignUpLink() {
+  Widget _buildSignInLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account?"),
+        const Text("Already have an account?"),
         TextButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/register');
+            Navigator.pushReplacementNamed(context, '/login');
           },
-          child: const Text('Sign Up'),
+          child: const Text('Sign In'),
         ),
       ],
     );
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -213,39 +238,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       try {
         await ref
             .read(authProvider.notifier)
-            .login(_usernameController.text.trim(), _passwordController.text);
+            .register(
+              _usernameController.text.trim(),
+              _emailController.text.trim(),
+              _passwordController.text,
+            );
 
         // Navigate if login was successful
         //if (mounted) {
         if (ref.read(authProvider).isAuthenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Login successful!'),
+              content: Text('Register & Login successful!'),
               backgroundColor: Colors.green,
             ),
           );
           Navigator.pushReplacementNamed(context, '/dashboard');
         }
       } catch (e) {
-        // if (mounted) {
-        //   ScaffoldMessenger.of(context).showSnackBar(
-        //     SnackBar(
-        //       content: Text('Error: ${e.toString()}'),
-        //       backgroundColor: Colors.red,
-        //     ),
-        //   );
-        // }
         if (mounted) {
-          String errorMessage = 'Login failed. Please try again.';
-
-          // You might want to check the specific error type or message
-          if (e.toString().contains('401') ||
-              e.toString().contains('Unauthorized')) {
-            errorMessage = 'Invalid username or password';
-          }
-          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } finally {
