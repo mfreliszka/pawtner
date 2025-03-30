@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "pawtner.pets.apps.PetsConfig",
     "pawtner.family.apps.FamilyConfig",
     "pawtner.notifications.apps.NotificationsConfig",
+    "pawtner.events.apps.EventsConfig",
 ]
 
 REST_FRAMEWORK = {
