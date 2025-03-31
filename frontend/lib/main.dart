@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'new/screens/login_screen.dart';
-import 'new/screens/register_screen.dart';
-import 'new/screens/dashboard_screen.dart';
-import 'new/route_generator.dart';
+import 'route_generator.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
