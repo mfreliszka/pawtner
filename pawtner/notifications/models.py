@@ -19,7 +19,7 @@ class DeviceToken(models.Model):
 class Notification(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
-    event = models.ForeignKey('pets.Event', on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    #event = models.ForeignKey('pets.Event', on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
     title = models.CharField(max_length=255)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
