@@ -1,9 +1,8 @@
-
 class UserModel {
   final String username;
   final String email;
-  final List<String> ownedPets;         // list of pet UUIDs
-  final List<String> memberOfFamilies;  // list of family UUIDs
+  final List<String> ownedPets; // list of pet UUIDs
+  final List<String> memberOfFamilies; // list of family UUIDs
 
   UserModel({
     required this.username,
@@ -43,17 +42,43 @@ class UserModel {
   }
 }
 
+// class PetModel {
+//   final String id;
+//   final String name;
+//   // Add other pet fields if needed
+
+//   PetModel({required this.id, required this.name});
+
+//   factory PetModel.fromJson(Map<String, dynamic> json) {
+//     return PetModel(
+//       id: json['id']?.toString() ?? json['uuid']?.toString() ?? '',
+//       name: json['name'] ?? '',
+//     );
+//   }
+// }
 class PetModel {
   final String id;
   final String name;
+  final String? imageUrl;
+  final String? breed;
+  final int? age;
   // Add other pet fields if needed
 
-  PetModel({required this.id, required this.name});
+  PetModel({
+    required this.id,
+    required this.name,
+    this.imageUrl,
+    this.breed,
+    this.age,
+  });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
     return PetModel(
       id: json['id']?.toString() ?? json['uuid']?.toString() ?? '',
       name: json['name'] ?? '',
+      imageUrl: json['image_url'] ?? json['imageUrl'],
+      breed: json['breed'],
+      age: json['age'] != null ? int.tryParse(json['age'].toString()) : null,
     );
   }
 }

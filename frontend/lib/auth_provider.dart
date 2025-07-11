@@ -1,4 +1,3 @@
-// lib/auth_provider.dart
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -130,7 +129,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       // Assume the response contains an access and refresh token
-      _accessToken = data['access'] ?? data['token'];  // 'token' if API returns it under a different key
+      _accessToken =
+          data['access'] ??
+          data['token']; // 'token' if API returns it under a different key
       _refreshToken = data['refresh'];
       // Save tokens securely
       await _secureStorage.write(key: 'accessToken', value: _accessToken);
@@ -138,8 +139,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Fetch user details and related data
       final userSuccess = await _fetchUserAndRelated();
       if (!userSuccess) {
-        state = AuthState.initial().copyWith(error: 'Failed to fetch user data');
+        state = AuthState.initial().copyWith(
+          error: 'Failed to fetch user data',
+        );
       }
+    } else if (response.statusCode == 401) {
+      throw Exception('401 Unauthorized');
     } else {
       state = AuthState.initial().copyWith(error: 'Login failed');
     }
@@ -160,6 +165,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Registration successful, now log in with the new credentials
       await login(username, password);
+    } else if (response.statusCode == 400) {
+      throw Exception(response.body);
     } else {
       state = AuthState.initial().copyWith(error: 'Registration failed');
     }
@@ -216,7 +223,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (refreshed) {
         return await _fetchUserAndRelated();
       }
-      state = AuthState.initial().copyWith(error: 'Session expired, please log in again');
+      state = AuthState.initial().copyWith(
+        error: 'Session expired, please log in again',
+      );
       return false;
     }
     return false;
@@ -262,7 +271,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       Uri.parse(PETS_URL),
       headers: {
         'Authorization': 'Bearer $_accessToken',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: jsonEncode({
         'name': name,
@@ -277,9 +286,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final newPet = PetModel.fromJson(petData);
       // Update state with the new pet
       final updatedPets = List<PetModel>.from(state.pets)..add(newPet);
-      final updatedUser = state.user != null
-          ? state.user!.copyWithNewPet(newPet.id)
-          : state.user;
+      final updatedUser =
+          state.user != null
+              ? state.user!.copyWithNewPet(newPet.id)
+              : state.user;
       state = state.copyWith(pets: updatedPets, user: updatedUser);
     } else if (res.statusCode == 401) {
       // Unauthorized: try refreshing token and retry once
@@ -297,17 +307,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       Uri.parse(FAMILY_URL),
       headers: {
         'Authorization': 'Bearer $_accessToken',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: jsonEncode({'name': name}),
     );
     if (res.statusCode == 200 || res.statusCode == 201) {
       final familyData = json.decode(res.body);
       final newFamily = FamilyModel.fromJson(familyData);
-      final updatedFamilies = List<FamilyModel>.from(state.families)..add(newFamily);
-      final updatedUser = state.user != null
-          ? state.user!.copyWithNewFamily(newFamily.id)
-          : state.user;
+      final updatedFamilies = List<FamilyModel>.from(state.families)
+        ..add(newFamily);
+      final updatedUser =
+          state.user != null
+              ? state.user!.copyWithNewFamily(newFamily.id)
+              : state.user;
       state = state.copyWith(families: updatedFamilies, user: updatedUser);
     } else if (res.statusCode == 401) {
       final refreshed = await _refreshAccessToken();
@@ -333,7 +345,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       Uri.parse(USER_DETAILS_URL),
       headers: {
         'Authorization': 'Bearer $_accessToken',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: jsonEncode({'username': newUsername, 'email': newEmail}),
     );

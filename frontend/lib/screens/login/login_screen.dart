@@ -1,22 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Attempt auto login if tokens are stored
+    Future.microtask(() async {
+      bool success = await ref.read(authProvider.notifier).tryAutoLogin();
+      if (!mounted) return;
+      if (success) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    });
+  }
+
+  @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -68,12 +83,12 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Email Field
           TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
+            controller: _usernameController,
+            keyboardType: TextInputType.name,
             decoration: InputDecoration(
-              labelText: 'Email',
-              hintText: 'Enter your email',
-              prefixIcon: const Icon(Icons.email_outlined),
+              labelText: 'Username',
+              hintText: 'Enter your username',
+              prefixIcon: const Icon(Icons.person_outline),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -88,12 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your email';
+                return 'Please enter your username';
               }
-              if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              ).hasMatch(value)) {
-                return 'Please enter a valid email';
+              if (!RegExp(r'^[a-zA-Z0-9_]{3,16}$').hasMatch(value)) {
+                return 'Please enter a valid username';
               }
               return null;
             },
@@ -183,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const Text("Don't have an account?"),
         TextButton(
           onPressed: () {
-            // Handle sign up navigation
+            Navigator.pushReplacementNamed(context, '/register');
           },
           child: const Text('Sign Up'),
         ),
@@ -198,25 +211,41 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       try {
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
+        await ref
+            .read(authProvider.notifier)
+            .login(_usernameController.text.trim(), _passwordController.text);
 
-        // Handle successful login
-        if (mounted) {
+        // Navigate if login was successful
+        //if (mounted) {
+        if (ref.read(authProvider).isAuthenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
               backgroundColor: Colors.green,
             ),
           );
+          Navigator.pushReplacementNamed(context, '/dashboard');
         }
       } catch (e) {
+        // if (mounted) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(
+        //       content: Text('Error: ${e.toString()}'),
+        //       backgroundColor: Colors.red,
+        //     ),
+        //   );
+        // }
         if (mounted) {
+          String errorMessage = 'Login failed. Please try again.';
+
+          // You might want to check the specific error type or message
+          if (e.toString().contains('401') ||
+              e.toString().contains('Unauthorized')) {
+            errorMessage = 'Invalid username or password';
+          }
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
           );
         }
       } finally {
